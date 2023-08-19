@@ -138,7 +138,7 @@ public final class InformationPlugin extends TextRenderer implements RendererPlu
             final var distance = calculateDistance(lastDistancePoint, gpxPoint);
             // System.out.println("DISTANCE " + distance);
             // System.out.println("TOTALDISTANCE " + totalDistance);
-            if (lastDistancePoint != null && gpxPoint.getTime() - lastDistancePoint.getTime() > 120000) {
+            if (lastDistancePoint != null && gpxPoint.getTime() - lastDistancePoint.getTime() > 60 * 60 * 1000) {
                 // System.out.println("TIME " + (gpxPoint.getTime() - lastDistancePoint.getTime()));
                 currentDistance = 0;
             }
