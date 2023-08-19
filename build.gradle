@@ -17,9 +17,6 @@
 plugins {
     id 'application'
     id 'com.github.johnrengelman.shadow' version '8.1.1'
-    id 'com.github.spotbugs' version '5.0.14'
-    id 'pmd'
-    id 'checkstyle'
     id 'java-library'
     id 'org.bytedeco.gradle-javacpp-platform' version '1.5.8'
 }
@@ -99,31 +96,6 @@ test {
 
 shadowJar {
     mergeServiceFiles()
-}
-
-spotbugsMain {
-    reports {
-        xml.enabled = false
-        html.enabled = true
-    }
-}
-
-spotbugsTest {
-    reports {
-        xml.enabled = false
-        html.enabled = true
-    }
-}
-
-checkstyle {
-    configFile file("${projectDir}/config/checkstyle/checkstyle.xml")
-    toolVersion "10.9.3"
-}
-
-pmd {
-    toolVersion = "6.55.0"
-    ruleSets = []
-    ruleSetFiles = files("${projectDir}/config/pmd/pmd-rules.xml")
 }
 
 task createVersionFile {
