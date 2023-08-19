@@ -51,6 +51,9 @@ public final class InformationPlugin extends TextRenderer implements RendererPlu
 
     private final Map<Integer, Double> speedValues = new HashMap<>();
     private GpxPoint lastSpeedPoint = null;
+    private GpxPoint lastDistancePoint = null;
+    private long totalDistance = 0;
+    private long currentDistance = 0;
 
     public InformationPlugin(@NonNull final Configuration configuration) {
         super(configuration.getFont());
@@ -86,6 +89,7 @@ public final class InformationPlugin extends TextRenderer implements RendererPlu
         final var time = RenderUtil.getTime(frame, minTime, fps, speedup);
         final var dateTimeString = showDateTime ? dateFormat.format(time) : "";
         final var latLongString = getLatLonString(marker);
+        final var distanceStrings = getDistanceStrings(marker);
         final var speedString = getSpeedString(marker, time, frame);
 
         final var gpsTime = getTime(marker);    //TODO --Get strings from resource
@@ -105,6 +109,8 @@ public final class InformationPlugin extends TextRenderer implements RendererPlu
         }
 
         final var text = information
+                .replace("%DISTANCE%", distanceStrings[0])          // Current Track Distance
+                .replace("%TOTALDISTANCE%", distanceStrings[1])     // Total Distance
                 .replace("%SPEED%", speedString)                    // Speed
                 .replace("%LATLON%", latLongString)                 // (last) GPS postion
                 .replace("%DATETIME%", dateTimeString)              // Frame (real) time
@@ -121,6 +127,22 @@ public final class InformationPlugin extends TextRenderer implements RendererPlu
             return String.format("%.4f, %.4f", trackPoint.getLatitude(), trackPoint.getLongitude()); //NON-NLS
         } else {
             return "";
+        }
+    }
+
+    private String[] getDistanceStrings(final Point2D point) {
+        if (point instanceof GpxPoint gpxPoint) {
+            final var distance = calculateDistance(lastDistancePoint, gpxPoint);
+            if (lastDistancePoint != null && gpxPoint.getTime() - lastDistancePoint.getTime() > 60 * 60 * 1000) {
+                currentDistance = 0;
+            }
+            currentDistance += distance;
+            totalDistance += distance;
+            lastDistancePoint = gpxPoint;
+            final var format = "%.2f %s";
+            return new String[]{format.formatted(currentDistance / 1000., " km"), format.formatted(totalDistance / 1000., " km")};
+        } else {
+            return new String[]{"", ""};
         }
     }
 
@@ -162,7 +184,6 @@ public final class InformationPlugin extends TextRenderer implements RendererPlu
 
         return speedUnit.convertSpeed(Math.round(speedValues.values().stream().mapToDouble(Double::doubleValue).average().orElse(0)));
     }
-
 
     private double calculateSpeed(final GpxPoint point, final long time) {
         final var timeout = time - 1_000 * 60; // 1 minute // TODO use speedup and fps
