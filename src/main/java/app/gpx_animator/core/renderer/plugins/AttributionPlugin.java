@@ -34,7 +34,7 @@ public final class AttributionPlugin extends TextRenderer implements RendererPlu
     private final int margin;
 
     public AttributionPlugin(@NonNull final Configuration configuration) {
-        super(configuration.getFont());
+        super(Constants.DEFAULT_FONT);
 
         final var mapTemplate = MapUtil.getMapTemplate(configuration.getTmsUrlTemplate());
         final var mapAttribution = mapTemplate == null || mapTemplate.attributionText() == null
