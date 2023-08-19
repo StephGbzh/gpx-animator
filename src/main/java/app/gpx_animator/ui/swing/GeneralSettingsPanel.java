@@ -948,7 +948,7 @@ abstract class GeneralSettingsPanel extends JPanel {
         add(lblKeepFirstFrame, gbcLabelKeepFirstFrame);
 
         keepFirstFrameSpinner = new JSpinner();
-        keepFirstFrameSpinner.setToolTipText(Option.KEEP_LAST_FRAME.getHelp());
+        keepFirstFrameSpinner.setToolTipText(Option.KEEP_FIRST_FRAME.getHelp());
         keepFirstFrameSpinner.setModel(new DurationSpinnerModel());
         keepFirstFrameSpinner.setEditor(new DurationEditor(keepFirstFrameSpinner));
         final var gbcKeepFirstFrameSpinner = new GridBagConstraints();
