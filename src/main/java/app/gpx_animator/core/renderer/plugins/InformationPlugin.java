@@ -15,7 +15,6 @@
  */
 package app.gpx_animator.core.renderer.plugins;
 
-import app.gpx_animator.Main;
 import app.gpx_animator.core.configuration.Configuration;
 import app.gpx_animator.core.data.Position;
 import app.gpx_animator.core.data.SpeedUnit;
@@ -26,8 +25,6 @@ import app.gpx_animator.core.util.RenderUtil;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
@@ -37,7 +34,7 @@ import java.util.Map;
 
 @SuppressWarnings("unused") // Plugins are loaded using reflection
 public final class InformationPlugin extends TextRenderer implements RendererPlugin {
-    
+
     private final DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM);
 
     private final String information;
@@ -132,25 +129,22 @@ public final class InformationPlugin extends TextRenderer implements RendererPlu
             return "";
         }
     }
-    
+
     private String[] getDistanceStrings(final Point2D point) {
         if (point instanceof GpxPoint gpxPoint) {
             final var distance = calculateDistance(lastDistancePoint, gpxPoint);
-            // System.out.println("DISTANCE " + distance);
-            // System.out.println("TOTALDISTANCE " + totalDistance);
             if (lastDistancePoint != null && gpxPoint.getTime() - lastDistancePoint.getTime() > 60 * 60 * 1000) {
-                // System.out.println("TIME " + (gpxPoint.getTime() - lastDistancePoint.getTime()));
                 currentDistance = 0;
             }
             currentDistance += distance;
             totalDistance += distance;
             lastDistancePoint = gpxPoint;
             final var format = "%.2f %s";
-            return new String[]{format.formatted(currentDistance/1000., " km"),format.formatted(totalDistance/1000., " km")};
+            return new String[]{format.formatted(currentDistance / 1000., " km"), format.formatted(totalDistance / 1000., " km")};
         } else {
-            return new String[]{"",""};
+            return new String[]{"", ""};
         }
-    } 
+    }
 
     public String getSpeedString(final Point2D point, final long time, final int frame) {
         if (point instanceof GpxPoint gpxPoint) {
@@ -183,7 +177,6 @@ public final class InformationPlugin extends TextRenderer implements RendererPlu
         final var speed = point.getSpeed() != null
                 ? point.getSpeed() * 3.6 // mps to kmh
                 : calculateSpeed(point, time);
-        // System.out.println("SPEED " + speed);
         speedValues.put(frame, speed);
 
         final var deleteBefore = frame - (Math.round(fps)); // 1 second
@@ -191,7 +184,6 @@ public final class InformationPlugin extends TextRenderer implements RendererPlu
 
         return speedUnit.convertSpeed(Math.round(speedValues.values().stream().mapToDouble(Double::doubleValue).average().orElse(0)));
     }
-
 
     private double calculateSpeed(final GpxPoint point, final long time) {
         final var timeout = time - 1_000 * 60; // 1 minute // TODO use speedup and fps
